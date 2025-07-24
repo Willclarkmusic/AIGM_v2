@@ -1,17 +1,14 @@
 # Phase-1_Development-Guide
 
 ## Overview
-
 This is your complete step-by-step guide to get the AIGM chat application from zero to a working MVP. Follow these steps in exact order.
 
 ## Pre-Requisites Setup (Do This First)
 
 ### Step 1: Create Accounts & Services
-
 **Time Required: 30 minutes**
 
 1. **Create Supabase Account**
-
    - Go to https://app.supabase.com
    - Sign up with GitHub
    - Create new project: "AIGM Development"
@@ -21,7 +18,6 @@ This is your complete step-by-step guide to get the AIGM chat application from z
      - Service Role Key: `your-service-role-key`
 
 2. **Create Cloudflare Account**
-
    - Go to https://cloudflare.com
    - Sign up and verify email
    - Go to R2 Object Storage
@@ -32,20 +28,18 @@ This is your complete step-by-step guide to get the AIGM chat application from z
      - Secret Access Key: `your-secret-access-key`
 
 3. **Set Up OAuth Applications**
-
+   
    **Google OAuth:**
-
    - Go to https://console.developers.google.com
    - Create new project: "AIGM Chat"
    - Enable Google+ API
    - Create OAuth 2.0 credentials
-   - Authorized redirect URIs:
+   - Authorized redirect URIs: 
      - `https://your-project-id.supabase.co/auth/v1/callback`
      - `http://localhost:3000/auth/callback`
    - **SAVE:** Client ID and Client Secret
-
+   
    **GitHub OAuth:**
-
    - Go to GitHub Settings > Developer settings > OAuth Apps
    - Create new OAuth app
    - Application name: "AIGM Chat Dev"
@@ -54,77 +48,82 @@ This is your complete step-by-step guide to get the AIGM chat application from z
    - **SAVE:** Client ID and Client Secret
 
 ### Step 2: Prepare Your Workspace
-
-**Time Required: 15 minutes**
+**Time Required: 5 minutes**
 
 1. **Open PowerShell as Administrator**
-2. **Navigate to your development folder**
+2. **Navigate to your AIGM_v2 project directory**
    ```powershell
-   cd C:\your-dev-folder
+   cd C:\path\to\your\AIGM_v2
    ```
-3. **Ensure WSL2 is working**
+3. **Verify project structure**
    ```powershell
-   wsl --version
-   # Should show WSL version 2.x.x
+   Get-ChildItem
+   # Should show: backend\, frontend\, docs\, tests\
    ```
 
 ## Phase 0: Project Setup with Claude Code
 
 ### Step 3: Start Claude Code Session
-
 **Time Required: 2 hours**
 
 1. **Open Claude Code in your terminal**
 2. **Copy and paste this EXACT prompt:**
 
 ```
-You are the primary Claude Code instance for the AIGM chat application project.
+You are the primary Claude Code instance for the AIGM chat application project. 
 
 CRITICAL SETUP CONTEXT:
-- OS: Windows 11 with WSL2
-- Terminal: You're running in WSL2 through PowerShell so use PS and venv mostly.  Only use WSL if you absolutely have to
-- Python: Use python -m venv venv for virtual environments
-- File paths: Use Linux-style paths (/)
-- Working directory: I want to create the project in the current directory
+- OS: Windows 11 with PowerShell ONLY (NO WSL2)
+- Terminal: PowerShell - all commands must be PowerShell compatible
+- Python: Python 3.10 with EXISTING venv in backend\venv\
+- Project Structure: AIGM_v2\ (root) with backend\, frontend\, docs\, tests\
+- Current Status: User has created basic structure and venv - you need to complete setup
+
+EXISTING PROJECT STATE:
+- AIGM_v2\ root directory exists with git repo
+- backend\ exists with Python 3.10 venv already created
+- frontend\ exists but empty
+- docs\ exists with claude.md and documentation files
+- tests\ exists for all test files
+- You need to activate existing venv with: .\backend\venv\Scripts\Activate.ps1
 
 REQUIRED READING:
-I have complete project documentation ready. The key files you MUST understand first:
+The project documentation is in docs\ folder:
 1. claude.md - Project rules and guidelines
-2. architecture.md - Technical architecture and database schema
+2. architecture.md - Technical architecture and database schema  
 3. testing-guide.md - TDD methodology with priority testing order
 
 PROJECT OVERVIEW:
 Building AIGM - a modern messaging platform with:
 - Frontend: React + TypeScript + Tailwind + TipTap + Supabase SDK
-- Backend: FastAPI + Python + Supabase + Cloudflare R2
+- Backend: FastAPI + Python 3.10 + Supabase + Cloudflare R2
 - Database: PostgreSQL via Supabase (cloud)
 - Real-time: Supabase Realtime WebSockets
 
 YOUR IMMEDIATE TASKS:
-1. Create the complete project structure
-2. Set up frontend (React + TypeScript + Vite)
-3. Set up backend (FastAPI + Python virtual environment)
+1. Verify current project structure (backend\, frontend\, docs\, tests\)
+2. Activate existing venv and install backend dependencies
+3. Set up frontend (React + TypeScript + Vite) 
 4. Create all environment files with proper templates
-5. Set up Docker development environment
-6. Initialize git repository with proper .gitignore
+5. Set up basic FastAPI structure
+6. Initialize any missing git setup
 
 CRITICAL FOCUS:
-This is Phase 0 - infrastructure setup only. Create the complete foundation but do NOT implement features yet. Focus on:
-- Proper project structure
-- All dependencies installed correctly
+This is Phase 0 - infrastructure setup completion. The foundation exists - you need to complete it:
+- Install all dependencies correctly
 - Environment configuration ready
-- Development server setup working
-- Git repository initialized
+- Development servers working
+- Project ready for Phase 0.5 (TDD testing)
 
 START WITH:
-1. Ask me to confirm the current working directory
-2. Create the project structure
-3. Set up both frontend and backend with all dependencies
-4. Create environment file templates
-5. Set up Docker development environment
-6. Initialize git and create initial commit
+1. Verify you're in AIGM_v2 directory
+2. Activate existing venv: .\backend\venv\Scripts\Activate.ps1
+3. Install backend requirements
+4. Set up frontend with all dependencies
+5. Create environment file templates
+6. Test that both servers start correctly
 
-Be methodical and ask for confirmation before major steps. Ensure everything is properly set up before moving to the next phase.
+Use PowerShell commands only. Be methodical and ask for confirmation before major steps.
 ```
 
 3. **Follow Claude Code's instructions exactly**
@@ -135,31 +134,27 @@ Be methodical and ask for confirmation before major steps. Ensure everything is 
    - OAuth credentials from Step 1
 
 ### Step 4: Verify Setup
-
-**Time Required: 15 minutes**
+**Time Required: 10 minutes**
 
 After Claude Code completes the setup, verify everything works:
 
 1. **Check project structure:**
-
-   ```bash
-   ls -la aigm-chat/
-   # Should show: frontend/, backend/, docs/, tests/, docker-compose.yml, etc.
+   ```powershell
+   Get-ChildItem AIGM_v2\
+   # Should show: backend\, frontend\, docs\, tests\, docker-compose.yml, etc.
    ```
 
 2. **Test frontend:**
-
-   ```bash
-   cd aigm-chat/frontend
+   ```powershell
+   cd AIGM_v2\frontend
    npm run dev
    # Should start on http://localhost:3000
    ```
 
 3. **Test backend:**
-
-   ```bash
-   cd ../backend
-   source venv/bin/activate
+   ```powershell
+   cd ..\backend
+   .\venv\Scripts\Activate.ps1
    uvicorn app.main:app --reload
    # Should start on http://localhost:8000
    ```
@@ -169,27 +164,33 @@ After Claude Code completes the setup, verify everything works:
 ## Phase 0.5: Infrastructure Testing (CRITICAL)
 
 ### Step 5: Start New Claude Code Session for Testing
-
 **Time Required: 3-4 hours**
 
 1. **Start fresh Claude Code session**
 2. **Use this EXACT prompt:**
 
 ```
-You are continuing the AIGM chat application development. The project structure has been created and now we need to implement Test-Driven Development (TDD) for the core infrastructure.
+You are continuing the AIGM chat application development. The project structure exists and now we need to implement Test-Driven Development (TDD) for the core infrastructure.
 
 CURRENT STATUS:
-- Project structure created in ./aigm-chat/
-- Frontend and backend basic setup complete
+- Project structure created in .\AIGM_v2\
+- Backend Python 3.10 venv exists and dependencies installed
+- Frontend setup complete with React + TypeScript
 - Environment files configured
 - Ready to implement TDD approach
+
+ENVIRONMENT:
+- Windows 11 with PowerShell ONLY
+- Python 3.10 venv in .\backend\venv\
+- Activate with: .\backend\venv\Scripts\Activate.ps1
+- Use PowerShell commands and Windows paths
 
 CRITICAL PHASE 0.5 OBJECTIVES:
 This phase is about infrastructure testing - we MUST get the foundation bulletproof before building features.
 
 PRIORITY ORDER (MUST DO IN THIS EXACT ORDER):
 1. User Search API Tests (PRIORITY #1 - EVERYTHING DEPENDS ON THIS)
-2. Friend Request Workflow Tests
+2. Friend Request Workflow Tests  
 3. Real-time Message Delivery Tests
 4. Database Schema Setup & Seed Data
 5. Supabase Integration Tests
@@ -215,12 +216,13 @@ CRITICAL SUCCESS CRITERIA:
 - All tests passing before moving to Phase 1
 
 START BY:
-1. Navigate to the aigm-chat directory
-2. Set up Supabase database schema
-3. Create comprehensive user search tests
-4. Implement user search API to pass tests
+1. Navigate to the AIGM_v2 directory
+2. Activate venv: .\backend\venv\Scripts\Activate.ps1
+3. Set up Supabase database schema
+4. Create comprehensive user search tests in ..\tests\
+5. Implement user search API to pass tests
 
-Remember: Everything depends on user search working perfectly. If users can't find each other, they can't become friends, and the app is useless.
+Remember: Everything depends on user search working perfectly. Use PowerShell commands only.
 ```
 
 3. **Let Claude Code work through each step methodically**
@@ -230,32 +232,28 @@ Remember: Everything depends on user search working perfectly. If users can't fi
    - Real-time WebSocket tests passing
 
 ### Step 6: Critical Validation Point
-
 **Time Required: 30 minutes**
 
 Before proceeding, these MUST be working:
 
 1. **Run user search tests:**
-
-   ```bash
-   cd aigm-chat/backend
-   source venv/bin/activate
-   pytest tests/test_user_search.py -v
+   ```powershell
+   cd AIGM_v2\backend
+   .\venv\Scripts\Activate.ps1
+   pytest ..\tests\test_user_search.py -v
    # ALL TESTS MUST PASS
    ```
 
 2. **Run friend workflow tests:**
-
-   ```bash
-   pytest tests/test_friend_workflow.py -v
+   ```powershell
+   pytest ..\tests\test_friend_workflow.py -v
    # ALL TESTS MUST PASS
    ```
 
 3. **Test API manually:**
-
-   ```bash
+   ```powershell
    curl "http://localhost:8000/api/users/search?q=ali"
-   # Should return Alice user in <500ms
+   # Should return Alice user_profile in <500ms
    ```
 
 4. **If ANY test fails, do NOT proceed. Fix with Claude Code first.**
@@ -263,13 +261,12 @@ Before proceeding, these MUST be working:
 ## Phase 1: Frontend Development with Windsurf
 
 ### Step 7: Switch to Windsurf
-
 **Time Required: 4-6 hours**
 
-1. **Open Windsurf IDE**
-2. **Open the aigm-chat project folder**
-3. **Start Cascade chat with Claude Sonnet 4**
-4. **Use this EXACT prompt:**
+2. **Open Windsurf IDE**
+3. **Open the AIGM_v2 project folder**
+4. **Start Cascade chat with Claude Sonnet 4**
+5. **Use this EXACT prompt:**
 
 ```
 I'm switching from Claude Code to Windsurf for frontend development of the AIGM chat application.
@@ -283,16 +280,16 @@ PROJECT STATUS:
 - Real-time WebSocket foundation ready
 
 MY CURRENT ENVIRONMENT:
-- Windows 11 with WSL2
+- Windows 11 with PowerShell
 - Windsurf IDE with full project access
-- Can use both PowerShell and WSL2 terminals
-- Project located in ./aigm-chat/
+- Python 3.10 venv in .\backend\venv\
+- Project located in .\AIGM_v2\
 
 REQUIRED READING:
 Please review these files in the project to understand the architecture:
-1. claude.md - Project rules and guidelines
-2. architecture.md - Technical architecture
-3. docs/claude-code-handoff.md - What was completed in previous phase
+1. docs\claude.md - Project rules and guidelines
+2. docs\architecture.md - Technical architecture 
+3. docs\claude-code-handoff.md - What was completed in previous phase
 
 YOUR ROLE AS WINDSURF:
 - Frontend React development with TypeScript
@@ -317,6 +314,7 @@ CRITICAL REQUIREMENTS:
 - Responsive design (mobile-first)
 - Real-time WebSocket integration with Supabase
 - All components properly tested
+- Work with user_profiles table (not users table)
 
 START BY:
 1. Examining the current frontend codebase
@@ -324,63 +322,54 @@ START BY:
 3. Planning the component architecture
 4. Implementing authentication flow first
 
-Focus on creating a production-ready, polished user experience that connects seamlessly to the tested backend APIs.
+Focus on creating a production-ready, polished user experience that connects seamlessly to the tested backend APIs that use user_profiles table.
 ```
 
 ### Step 8: Frontend Development Phases
-
 **Follow Windsurf's guidance through these phases:**
 
 **Phase 1A: Authentication (Day 1)**
-
 - Login/signup forms
 - OAuth integration (Google/GitHub)
 - Protected routes
 - User session management
 
 **Phase 1B: Layout & Navigation (Day 2)**
-
 - Three-sidebar layout
 - Server bar (left)
-- Info bar (middle)
+- Info bar (middle) 
 - Members list (right)
 - Responsive design
 
 **Phase 1C: User Management (Day 3)**
-
 - User search interface
 - Friend request UI
 - Friend list display
 - User status indicators
 
 **Phase 1D: Messaging Core (Day 4-5)**
-
 - Message composer with TipTap
 - Message display bubbles
 - Real-time message delivery
 - Message pagination
 
 **Phase 1E: Server/Room Management (Day 6)**
-
 - Server creation UI
 - Room management
 - Invite system
 - Member management
 
 ### Step 9: Testing & Integration
-
 **Time Required: 1 day**
 
 1. **Component Testing in Windsurf:**
-
-   ```bash
+   ```powershell
    cd frontend
    npm run test
    # All component tests should pass
    ```
 
 2. **End-to-End Testing:**
-
    - Register new user
    - Search for friends
    - Send friend request
@@ -398,7 +387,6 @@ Focus on creating a production-ready, polished user experience that connects sea
 ## Phase 1.5: File Upload Implementation
 
 ### Step 10: Return to Claude Code for File Uploads
-
 **Time Required: 1 day**
 
 1. **Start new Claude Code session**
@@ -413,6 +401,12 @@ CURRENT STATUS:
 - Real-time delivery working perfectly
 - Authentication and friend system complete
 - Need to add file upload as final Phase 1 feature
+
+ENVIRONMENT:
+- Windows 11 with PowerShell
+- Python 3.10 venv in .\backend\venv\
+- Project in .\AIGM_v2\
+- Use PowerShell commands only
 
 TASK:
 Implement complete file upload system:
@@ -431,7 +425,7 @@ REQUIREMENTS:
 - File metadata in PostgreSQL database
 - Proper error handling and user feedback
 
-CRITICAL:
+CRITICAL: 
 - All file upload functionality must have comprehensive tests
 - Security must be bulletproof (file type validation, size limits)
 - UI must be intuitive with drag & drop
@@ -442,11 +436,9 @@ Implement this as the final addition to complete Phase 1 MVP.
 ## Phase 1 Complete: Final Validation
 
 ### Step 11: Complete System Test
-
 **Time Required: 2 hours**
 
 1. **Full User Journey Test:**
-
    - [ ] User registration with email
    - [ ] Google OAuth login works
    - [ ] GitHub OAuth login works
@@ -465,7 +457,6 @@ Implement this as the final addition to complete Phase 1 MVP.
    - [ ] Responsive design works on mobile
 
 2. **Performance Validation:**
-
    - [ ] Page load time < 2 seconds
    - [ ] API responses < 500ms
    - [ ] Real-time message delivery < 100ms
@@ -480,7 +471,6 @@ Implement this as the final addition to complete Phase 1 MVP.
 ### Step 12: Production Deployment Preparation
 
 1. **Environment Setup:**
-
    - Create production Supabase project
    - Set up production Cloudflare R2 bucket
    - Configure production OAuth apps
@@ -495,7 +485,6 @@ Implement this as the final addition to complete Phase 1 MVP.
 ## Success Criteria
 
 **Phase 1 is complete when:**
-
 - [ ] All automated tests pass (100%)
 - [ ] Complete user journey works end-to-end
 - [ ] Performance meets requirements
@@ -506,7 +495,7 @@ Implement this as the final addition to complete Phase 1 MVP.
 ## Time Estimate Summary
 
 - **Pre-requisites Setup:** 45 minutes
-- **Phase 0 (Claude Code Setup):** 2 hours
+- **Phase 0 (Claude Code Setup):** 2 hours  
 - **Phase 0.5 (Infrastructure Testing):** 3-4 hours
 - **Phase 1 (Frontend Development):** 4-6 hours over 6 days
 - **Phase 1.5 (File Uploads):** 1 day
@@ -517,7 +506,6 @@ Implement this as the final addition to complete Phase 1 MVP.
 ## Emergency Contacts
 
 **If you get stuck:**
-
 1. **Check the testing-guide.md** for debugging strategies
 2. **Review architecture.md** for technical decisions
 3. **Use the deployment-guide.md** for production issues
@@ -526,7 +514,6 @@ Implement this as the final addition to complete Phase 1 MVP.
 ## Next Steps After Phase 1
 
 Once Phase 1 is complete, you'll have a fully functional messaging platform. Phase 2 will add:
-
 - Spaces (video conferences, AI agents, music creation, 3D spaces)
 - Advanced file sharing and collaboration
 - Mobile app development

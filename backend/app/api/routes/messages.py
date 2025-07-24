@@ -1,0 +1,107 @@
+from fastapi import APIRouter, HTTPException, Depends, Query, status
+from typing import Optional
+
+from app.dependencies import get_current_user
+from app.models.message import MessageCreate, MessageResponse, MessageListResponse, MessageEdit
+from app.models.user import User
+from app.services.message import MessageService
+from app.utils.exceptions import ValidationError, NotFoundError, PermissionError
+
+router = APIRouter()
+message_service = MessageService()
+
+# Rate limiting store (in production, use Redis)
+rate_limit_store = {}
+
+
+@router.post("/", response_model=MessageResponse)
+async def send_message(
+    message_data: MessageCreate,
+    current_user: User = Depends(get_current_user)
+):
+    """Send a new message to a DM conversation or room"""
+    try:
+        return await message_service.send_message(message_data, current_user.id)
+    except ValidationError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=str(e))
+    except NotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@router.get("/dm/{conversation_id}", response_model=MessageListResponse)
+async def get_dm_messages(
+    conversation_id: str,
+    current_user: User = Depends(get_current_user),
+    limit: int = Query(50, ge=1, le=100),
+    offset: int = Query(0, ge=0)
+):
+    """Get messages from a DM conversation with pagination"""
+    try:
+        return await message_service.get_dm_messages(
+            conversation_id, current_user.id, limit, offset
+        )
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=str(e))
+    except NotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@router.get("/room/{room_id}", response_model=MessageListResponse)
+async def get_room_messages(
+    room_id: str,
+    current_user: User = Depends(get_current_user),
+    limit: int = Query(50, ge=1, le=100),
+    offset: int = Query(0, ge=0)
+):
+    """Get messages from a room with pagination"""
+    try:
+        return await message_service.get_room_messages(
+            room_id, current_user.id, limit, offset
+        )
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=str(e))
+    except NotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@router.put("/{message_id}", response_model=MessageResponse)
+async def edit_message(
+    message_id: str,
+    edit_data: MessageEdit,
+    current_user: User = Depends(get_current_user)
+):
+    """Edit an existing message (only by author)"""
+    try:
+        return await message_service.edit_message(message_id, edit_data, current_user.id)
+    except ValidationError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=str(e))
+    except NotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@router.delete("/{message_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_message(
+    message_id: str,
+    current_user: User = Depends(get_current_user)
+):
+    """Delete a message (only by author)"""
+    try:
+        await message_service.delete_message(message_id, current_user.id)
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=str(e))
+    except NotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")

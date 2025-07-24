@@ -1,0 +1,38 @@
+# FastAPI and server
+fastapi[standard]==0.115.6
+uvicorn[standard]==0.32.1
+
+# Supabase (latest version)
+supabase==2.17.0
+
+# Data validation and serialization
+pydantic>=2.11.7,<3.0.0
+pydantic-settings==2.6.1
+
+# Authentication and security
+python-jose[cryptography]==3.3.0
+python-multipart==0.0.18
+
+# Cloud storage
+boto3==1.35.75
+botocore==1.35.75
+
+# Testing
+pytest==8.3.4
+pytest-asyncio==1.1.0
+pytest-cov==4.1.0
+
+# HTTP client (compatible with supabase 2.17.0)
+httpx>=0.26,<0.29
+
+# Environment and utilities
+python-dotenv==1.0.1
+
+# Rate limiting
+slowapi==0.1.9
+
+# Caching (optional)
+redis==5.2.1
+
+# Development tools
+black==24.10.0
