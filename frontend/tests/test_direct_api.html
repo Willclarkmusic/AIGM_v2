@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Direct API Connection</title>
+</head>
+<body>
+    <h1>Direct API Connection Test</h1>
+    <button onclick="testDirectAPI()">Test Direct API</button>
+    <div id="output"></div>
+
+    <script>
+    async function testDirectAPI() {
+        const output = document.getElementById('output');
+        output.innerHTML = 'Testing direct connection...';
+        
+        try {
+            console.log('Testing direct connection to http://127.0.0.1:8000/api/conversations');
+            
+            const response = await fetch('http://127.0.0.1:8000/api/conversations', {
+                headers: {
+                    'Authorization': 'Bearer test-token'
+                }
+            });
+            
+            console.log('Response status:', response.status);
+            console.log('Response headers:', [...response.headers.entries()]);
+            
+            const responseText = await response.text();
+            console.log('Response text length:', responseText.length);
+            
+            if (responseText) {
+                const jsonData = JSON.parse(responseText);
+                output.innerHTML = `
+                    <h3>Direct API Test Results:</h3>
+                    <p><strong>Status:</strong> ${response.status}</p>
+                    <p><strong>Conversations:</strong> ${jsonData.conversations?.length || 0}</p>
+                    <p><strong>Total:</strong> ${jsonData.total || 0}</p>
+                    <p><strong>Success!</strong> Backend is reachable directly</p>
+                `;
+            } else {
+                output.innerHTML = `<p><strong>Error:</strong> Empty response</p>`;
+            }
+            
+        } catch (error) {
+            console.error('Direct API test error:', error);
+            output.innerHTML = `
+                <p><strong>Error:</strong> ${error.message}</p>
+                <p>This might be a CORS issue. Check browser console for details.</p>
+            `;
+        }
+    }
+    </script>
+</body>
+</html>

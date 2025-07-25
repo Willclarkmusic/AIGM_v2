@@ -1,0 +1,61 @@
+{
+  "conversations": [
+    {
+      "id": "16fe6ad7-2755-4997-b219-e4f20b35f7ac",
+      "created_at": "2025-07-21T00:46:59.626152Z",
+      "updated_at": "2025-07-21T00:46:59.626152Z",
+      "participants": [
+        {
+          "id": "229d3ddc-3423-44f3-b14c-acc0d4985e68",
+          "username": "alice",
+          "display_name": "Alice Johnson",
+          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=alice",
+          "custom_url": null,
+          "status": "online",
+          "status_text": "Building AIGM!",
+          "status_color": "#22c55e",
+          "created_at": "2025-07-21T00:46:55.093334Z",
+          "updated_at": "2025-07-21T00:46:55.093334Z"
+        },
+        {
+          "id": "96bc930e-d86f-42df-9760-98f83878c29c",
+          "username": "bob",
+          "display_name": "Bob Smith",
+          "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=bob",
+          "custom_url": null,
+          "status": "online",
+          "status_text": "Ready to chat",
+          "status_color": "#3b82f6",
+          "created_at": "2025-07-21T00:46:56.208341Z",
+          "updated_at": "2025-07-21T00:46:56.208341Z"
+        }
+      ],
+      "last_message": {
+        "id": "58f2d414-5fc8-48a0-a7d0-86383fe5a560",
+        "content": {
+          "type": "doc",
+          "content": [
+            {
+              "type": "paragraph",
+              "content": [
+                {
+                  "text": "Hey Bob! Welcome to AIGM. This is our test conversation! 🎉",
+                  "type": "text"
+                }
+              ]
+            }
+          ]
+        },
+        "author_id": "229d3ddc-3423-44f3-b14c-acc0d4985e68",
+        "room_id": null,
+        "dm_conversation_id": "16fe6ad7-2755-4997-b219-e4f20b35f7ac",
+        "space_id": null,
+        "created_at": "2025-07-21T00:47:00.083189+00:00",
+        "updated_at": "2025-07-21T00:47:00.083189+00:00"
+      },
+      "last_message_at": "2025-07-21T00:47:00.083189Z",
+      "unread_count": 0
+    }
+  ],
+  "total": 1
+}

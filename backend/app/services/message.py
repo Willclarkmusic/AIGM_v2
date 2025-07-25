@@ -44,43 +44,37 @@ class MessageService:
             'updated_at': datetime.now(timezone.utc).isoformat()
         }
 
-        response = (
-            self.supabase.table("messages")
-            .insert(message_record)
-            .select("*")
-            .single()
-            .execute()
-        )
+        response = self.supabase.table("messages").insert(message_record).execute()
 
-        if response.error:
-            raise Exception(f"Failed to send message: {response.error}")
+        # Exceptions are raised directly by the new Supabase client
+        if not response.data or len(response.data) == 0:
+            raise Exception("Failed to insert message")
 
-        return MessageResponse(**response.data)
+        return MessageResponse(**response.data[0])
 
     async def get_dm_messages(
         self, 
         conversation_id: str, 
         user_id: str, 
         limit: int = 50, 
-        offset: int = 0
+        offset: int = 0,
+        before: Optional[datetime] = None
     ) -> MessageListResponse:
         """Get messages from a DM conversation with pagination"""
         
         # Validate user has access to this conversation
         await self._validate_dm_conversation_access(conversation_id, user_id)
 
-        # Get messages with pagination
-        response = (
-            self.supabase.table("messages")
-            .select("*")
-            .eq("dm_conversation_id", conversation_id)
-            .order("created_at", desc=True)
-            .range(offset, offset + limit - 1)
-            .execute()
-        )
+        # Build query with optional before filter
+        query = self.supabase.table("messages").select("*").eq("dm_conversation_id", conversation_id)
+        
+        if before:
+            query = query.lt("created_at", before.isoformat())
+        
+        # Get messages with pagination (ordered by created_at desc for newest first)
+        response = query.order("created_at", desc=True).range(offset, offset + limit - 1).execute()
 
-        if response.error:
-            raise Exception(f"Failed to retrieve messages: {response.error}")
+        # Exceptions are raised directly by the new Supabase client
 
         messages = [MessageResponse(**msg) for msg in response.data]
         
@@ -116,8 +110,7 @@ class MessageService:
             .execute()
         )
 
-        if response.error:
-            raise Exception(f"Failed to retrieve messages: {response.error}")
+        # Exceptions are raised directly by the new Supabase client
 
         messages = [MessageResponse(**msg) for msg in response.data]
         
@@ -143,7 +136,7 @@ class MessageService:
             .execute()
         )
 
-        if existing_response.error or not existing_response.data:
+        if not existing_response.data:
             raise NotFoundError("Message not found")
 
         existing_message = existing_response.data
@@ -168,8 +161,7 @@ class MessageService:
             .execute()
         )
 
-        if update_response.error:
-            raise Exception(f"Failed to edit message: {update_response.error}")
+        # Exceptions are raised directly by the new Supabase client
 
         return MessageResponse(**update_response.data)
 
@@ -185,7 +177,7 @@ class MessageService:
             .execute()
         )
 
-        if existing_response.error or not existing_response.data:
+        if not existing_response.data:
             raise NotFoundError("Message not found")
 
         existing_message = existing_response.data
@@ -202,8 +194,7 @@ class MessageService:
             .execute()
         )
 
-        if delete_response.error:
-            raise Exception(f"Failed to delete message: {delete_response.error}")
+        # Exceptions are raised directly by the new Supabase client
 
     async def _validate_dm_conversation_access(self, conversation_id: str, user_id: str) -> None:
         """Validate that user has access to the DM conversation"""
@@ -217,7 +208,7 @@ class MessageService:
             .execute()
         )
 
-        if conv_response.error or not conv_response.data:
+        if not conv_response.data:
             raise NotFoundError("Conversation not found")
 
         # Check if user is a participant
@@ -229,7 +220,7 @@ class MessageService:
             .execute()
         )
 
-        if participant_response.error or not participant_response.data:
+        if not participant_response.data:
             raise PermissionError("You are not a participant in this conversation")
 
     async def _validate_room_access(self, room_id: str, user_id: str) -> None:
@@ -244,7 +235,7 @@ class MessageService:
             .execute()
         )
 
-        if room_response.error or not room_response.data:
+        if not room_response.data:
             raise NotFoundError("Room not found")
 
         server_id = room_response.data['server_id']
@@ -259,7 +250,7 @@ class MessageService:
             .execute()
         )
 
-        if member_response.error or not member_response.data:
+        if not member_response.data:
             raise PermissionError("You are not a member of this server")
 
     def _sanitize_content(self, content: Dict[str, Any]) -> Dict[str, Any]:

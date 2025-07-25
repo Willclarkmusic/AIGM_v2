@@ -32,7 +32,7 @@ class ConversationService:
             .execute()
         )
 
-        if participant_response.error or not participant_response.data:
+        if not participant_response.data:
             raise NotFoundError(f"User '{participant_username}' not found")
 
         participant = User(**participant_response.data)
@@ -50,8 +50,7 @@ class ConversationService:
             .execute()
         )
 
-        if conversation_response.error:
-            raise Exception(f"Failed to create conversation: {conversation_response.error}")
+        # Exceptions are raised directly by the new Supabase client
 
         conversation_id = conversation_response.data
 
@@ -73,7 +72,7 @@ class ConversationService:
             .execute()
         )
 
-        if conv_response.error or not conv_response.data:
+        if not conv_response.data:
             raise NotFoundError("Conversation not found")
 
         # Get participants
@@ -84,8 +83,7 @@ class ConversationService:
             .execute()
         )
 
-        if participants_response.error:
-            raise Exception(f"Failed to get participants: {participants_response.error}")
+        # Exceptions are raised directly by the new Supabase client
 
         participants = [User(**p["user_profiles"]) for p in participants_response.data]
 
@@ -129,8 +127,8 @@ class ConversationService:
             .execute()
         )
 
-        if conversations_response.error:
-            raise Exception(f"Failed to get conversations: {conversations_response.error}")
+        # Note: New Supabase client doesn't have .error attribute
+        # Exceptions are raised directly
 
         conversation_ids = [c["conversation_id"] for c in conversations_response.data]
 
@@ -142,7 +140,9 @@ class ConversationService:
         for conv_id in conversation_ids:
             try:
                 conversation = await self.get_conversation(user_id, conv_id)
-                conversations.append(conversation)
+                # Only include conversations that have at least one message
+                if conversation.last_message is not None:
+                    conversations.append(conversation)
             except Exception as e:
                 # Skip conversations that error (might be deleted or inaccessible)
                 print(f"Warning: Could not load conversation {conv_id}: {e}")
@@ -170,8 +170,7 @@ class ConversationService:
             .execute()
         )
 
-        if delete_response.error:
-            raise Exception(f"Failed to delete conversation: {delete_response.error}")
+        # Exceptions are raised directly by the new Supabase client
 
     async def _validate_conversation_access(self, conversation_id: str, user_id: str) -> None:
         """Validate that user has access to the conversation"""
@@ -185,7 +184,7 @@ class ConversationService:
             .execute()
         )
 
-        if conv_response.error or not conv_response.data:
+        if not conv_response.data:
             raise NotFoundError("Conversation not found")
 
         # Check if user is a participant
@@ -197,7 +196,7 @@ class ConversationService:
             .execute()
         )
 
-        if participant_response.error or not participant_response.data:
+        if not participant_response.data:
             raise PermissionError("You are not a participant in this conversation")
 
     async def _are_users_friends(self, user1_id: str, user2_id: str) -> bool:

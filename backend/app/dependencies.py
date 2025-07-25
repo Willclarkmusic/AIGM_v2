@@ -24,9 +24,9 @@ async def get_current_user(token: str = Depends(security)) -> UserProfile:
     """
     # For development - always return alice user to match database data
     return UserProfile(
-        id="alice_123",
+        id="229d3ddc-3423-44f3-b14c-acc0d4985e68",  # Alice's actual UUID from database
         username="alice",
-        display_name="Alice Demo",
+        display_name="Alice Johnson",  # Match database display name
         avatar_url=None,
         custom_url=None,
         status="online",

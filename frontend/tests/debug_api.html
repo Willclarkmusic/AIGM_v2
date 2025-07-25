@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug API</title>
+</head>
+<body>
+    <h1>API Debug Test</h1>
+    <button onclick="testAPI()">Test API</button>
+    <div id="output"></div>
+
+    <script>
+    async function testAPI() {
+        const output = document.getElementById('output');
+        output.innerHTML = 'Testing...';
+        
+        try {
+            console.log('Testing /api/conversations...');
+            
+            const response = await fetch('/api/conversations', {
+                headers: {
+                    'Authorization': 'Bearer test-token'
+                }
+            });
+            
+            console.log('Response status:', response.status);
+            console.log('Response headers:', [...response.headers.entries()]);
+            
+            const responseText = await response.text();
+            console.log('Response text:', responseText);
+            
+            output.innerHTML = `
+                <h3>API Test Results:</h3>
+                <p><strong>Status:</strong> ${response.status}</p>
+                <p><strong>Response Text:</strong> <pre>${responseText}</pre></p>
+                <p><strong>Response Length:</strong> ${responseText.length}</p>
+            `;
+            
+        } catch (error) {
+            console.error('API test error:', error);
+            output.innerHTML = `<p><strong>Error:</strong> ${error.message}</p>`;
+        }
+    }
+    </script>
+</body>
+</html>
